@@ -14,6 +14,7 @@ const game = {
     timerEnabled: false,
     timerValue: 5,
     timerInterval: null,
+    sequenceTimeout: null,
     isMuted: false,
     rotation: 0,
 };
@@ -276,6 +277,7 @@ document.querySelectorAll('.difficulty-btn').forEach(btn => {
 document.getElementById('start-btn').addEventListener('click', startGame);
 
 document.getElementById('restart-btn').addEventListener('click', () => {
+    clearTimeout(game.sequenceTimeout);
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('game-area').style.display = 'flex';
     resetGame();
@@ -379,6 +381,7 @@ function playSequence() {
     updateSequenceDisplay();
     updateStatus('Watch the sequence...');
     clearInterval(game.timerInterval);
+    clearTimeout(game.sequenceTimeout);
 
     const settings = difficultySettings[game.difficulty];
     let delay = 500;
@@ -391,6 +394,7 @@ function playSequence() {
     }
 
     let totalSegmentTime = 0;
+    let flashTimeouts = [];
     game.sequence.forEach((color, index) => {
         let showTime = settings.showTime;
         let pauseTime = settings.pauseTime;
@@ -400,15 +404,17 @@ function playSequence() {
             pauseTime = 100 + Math.random() * 300;
         }
         
-        setTimeout(() => {
+        const tid = setTimeout(() => {
             showColor(color, showTime);
         }, delay + totalSegmentTime);
+        flashTimeouts.push(tid);
         totalSegmentTime += showTime + pauseTime;
     });
     
     const totalTime = delay + totalSegmentTime;
 
-    setTimeout(() => {
+    game.sequenceTimeout = setTimeout(() => {
+        if (!game.isPlaying) return;
         game.isPlaying = false;
         game.isPlayerTurn = true;
         game.playerSequence = [];
@@ -460,6 +466,7 @@ function handleColorClick(color) {
 
 function gameOver() {
     clearInterval(game.timerInterval);
+    clearTimeout(game.sequenceTimeout);
     game.isPlayerTurn = false;
     game.isPlaying = false;
     updateStatus('Wrong!');
@@ -473,6 +480,7 @@ function gameOver() {
 }
 
 function showMenu() {
+    clearTimeout(game.sequenceTimeout);
     document.getElementById('game-area').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('menu').style.display = 'block';
