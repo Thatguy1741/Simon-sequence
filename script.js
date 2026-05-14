@@ -67,6 +67,24 @@ function playTone(frequency, duration = 200) {
 function loadData() {
     const lb = localStorage.getItem('simonLeaderboard');
     if (lb) game.leaderboard = JSON.parse(lb);
+    
+    // Clean existing duplicates
+    Object.keys(game.leaderboard).forEach(diff => {
+        const seen = {};
+        game.leaderboard[diff] = game.leaderboard[diff].filter(entry => {
+            if (seen[entry.name]) {
+                if (entry.score > seen[entry.name].score) {
+                    seen[entry.name] = entry;
+                    return true;
+                }
+                return false;
+            }
+            seen[entry.name] = entry;
+            return true;
+        });
+    });
+    localStorage.setItem('simonLeaderboard', JSON.stringify(game.leaderboard));
+    
     const hs = localStorage.getItem('simonHighScore');
     if (hs) game.highScore = parseInt(hs);
     document.getElementById('high-score-value').textContent = game.highScore;
@@ -77,17 +95,6 @@ loadData();
 
 function saveScore() {
     const name = document.getElementById('player-name').value.trim() || 'Anonymous';
-    const password = localStorage.getItem('simonPass_' + name);
-    
-    // Check if password is required for this name
-    if (game.passwordProtected[name] && !game.passwordVerified[name]) {
-        const entered = prompt('Enter password for ' + name + ':');
-        if (entered !== game.passwordProtected[name]) {
-            alert('Wrong password! Score not saved.');
-            return;
-        }
-        game.passwordVerified[name] = true;
-    }
     
     localStorage.setItem('simonPlayerName', name);
     if (game.score > game.highScore) {
@@ -171,12 +178,29 @@ function showLeaderboard(diff) {
 
 function showLeaderboardTab(diff) {
     const entries = document.getElementById('leaderboard-entries');
-    const scores = game.leaderboard[diff] || [];
+    let scores = game.leaderboard[diff] || [];
+    
+    // Deduplicate: keep only highest score per name
+    const seen = {};
+    scores = scores.filter(entry => {
+        if (seen[entry.name]) {
+            if (entry.score > seen[entry.name]) {
+                seen[entry.name] = entry.score;
+                return true;
+            }
+            return false;
+        }
+        seen[entry.name] = entry.score;
+        return true;
+    });
+    scores.sort((a, b) => b.score - a.score);
+    scores = scores.slice(0, 10);
+    
+    entries.innerHTML = '<div class="leaderboard-entry"><span>Player</span><span>Score</span></div>';
     if (scores.length === 0) {
         entries.innerHTML = '<p style="color:#666;padding:20px;">No scores yet</p>';
         return;
     }
-    entries.innerHTML = '<div class="leaderboard-entry"><span>Player</span><span>Score</span></div>';
     scores.forEach((entry, i) => {
         entries.innerHTML += `<div class="leaderboard-entry"><span>${i+1}. ${entry.name}</span><span>${entry.score}</span></div>`;
     });
@@ -262,9 +286,22 @@ document.addEventListener('click', () => {
 }, { once: true });
 
 function startGame() {
-    if (!document.getElementById('player-name').value.trim()) {
+    const name = document.getElementById('player-name').value.trim();
+    if (!name) {
         document.getElementById('player-name').value = 'Anonymous';
     }
+    
+    // Check if name requires password
+    const playerName = document.getElementById('player-name').value.trim();
+    if (game.passwordProtected[playerName]) {
+        const entered = prompt('This name is private. Enter password for ' + playerName + ':');
+        if (entered !== game.passwordProtected[playerName]) {
+            alert('Wrong password!');
+            return;
+        }
+        game.passwordVerified[playerName] = true;
+    }
+    
     initAudio();
     document.getElementById('menu').style.display = 'none';
     document.getElementById('game-area').style.display = 'flex';
