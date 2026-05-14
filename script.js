@@ -10,25 +10,30 @@ const game = {
     difficulty: 'normal',
     currentScheme: 'classic',
     highScore: 0,
-    leaderboard: { easy: [], normal: [], hard: [] },
+    leaderboard: { easy: [], normal: [], hard: [], special: [] },
     timerEnabled: false,
     timerValue: 5,
     timerInterval: null,
     isMuted: false,
+    rotation: 0,
 };
 
 const difficultySettings = {
-    easy: { showTime: 800, pauseTime: 400, timerBase: 8 },
-    normal: { showTime: 500, pauseTime: 250, timerBase: 6 },
-    hard: { showTime: 300, pauseTime: 150, timerBase: 4 }
+    easy: { showTime: 800, pauseTime: 400, timerBase: 8, colors: 4 },
+    normal: { showTime: 500, pauseTime: 250, timerBase: 6, colors: 4 },
+    hard: { showTime: 300, pauseTime: 150, timerBase: 4, colors: 4 },
+    special: { showTime: 600, pauseTime: 200, timerBase: 5, colors: 6 }
 };
 
 const colors = ['green', 'red', 'yellow', 'blue'];
+const specialColors = ['green', 'red', 'yellow', 'blue', 'orange', 'purple'];
 const colorFrequencies = {
     green: 392,
     red: 329.63,
     yellow: 261.63,
-    blue: 220
+    blue: 220,
+    orange: 294.66,
+    purple: 369.99
 };
 
 function initAudio() {
@@ -245,7 +250,7 @@ document.getElementById('timer-toggle').addEventListener('change', (e) => {
 // Change 6: Keyboard support
 document.addEventListener('keydown', (e) => {
     if (game.isPlayerTurn && !game.isPlaying) {
-        const keyMap = { '1': 'green', '2': 'red', '3': 'yellow', '4': 'blue' };
+        const keyMap = { '1': 'green', '2': 'red', '3': 'yellow', '4': 'blue', '5': 'orange', '6': 'purple' };
         const color = keyMap[e.key];
         if (color) {
             e.preventDefault();
@@ -313,10 +318,24 @@ function resetGame() {
     game.sequence = [];
     game.playerSequence = [];
     game.score = 0;
+    game.rotation = 0;
     game.timerValue = difficultySettings[game.difficulty].timerBase;
     clearInterval(game.timerInterval);
     document.getElementById('timer-display').style.display = game.timerEnabled ? 'block' : 'none';
+    document.getElementById('special-keys').style.display = game.difficulty === 'special' ? 'inline' : 'none';
     document.getElementById('timer-value').textContent = game.timerValue;
+    
+    const simon = document.getElementById('simon');
+    simon.classList.remove('six-colors');
+    simon.style.transform = 'rotate(0deg)';
+    
+    if (game.difficulty === 'special') {
+        simon.classList.add('six-colors');
+        document.getElementById('sequence-display').style.color = '#bb86fc';
+    } else {
+        document.getElementById('sequence-display').style.color = '#e94560';
+    }
+    
     updateSequenceDisplay();
     updateStatus('Watch the sequence...');
 }
@@ -353,19 +372,41 @@ function startTimer() {
 function playSequence() {
     game.isPlaying = true;
     game.isPlayerTurn = false;
-    game.sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+    
+    const colorSet = game.difficulty === 'special' ? specialColors : colors;
+    game.sequence.push(colorSet[Math.floor(Math.random() * colorSet.length)]);
+    
     updateSequenceDisplay();
     updateStatus('Watch the sequence...');
     clearInterval(game.timerInterval);
 
     const settings = difficultySettings[game.difficulty];
     let delay = 500;
+    
+    // Every 5 rounds, rotate the Simon wheel
+    if (game.difficulty === 'special' && game.sequence.length % 5 === 0) {
+        game.rotation = (game.rotation + (Math.random() < 0.5 ? 90 : -90)) % 360;
+        document.getElementById('simon').style.transform = 'rotate(' + game.rotation + 'deg)';
+        document.getElementById('simon').style.transition = 'transform 0.5s ease-out';
+    }
 
+    let totalSegmentTime = 0;
     game.sequence.forEach((color, index) => {
+        let showTime = settings.showTime;
+        let pauseTime = settings.pauseTime;
+        
+        if (game.difficulty === 'special') {
+            showTime = 150 + Math.random() * 600;
+            pauseTime = 100 + Math.random() * 300;
+        }
+        
         setTimeout(() => {
-            showColor(color);
-        }, delay + index * (settings.showTime + settings.pauseTime));
+            showColor(color, showTime);
+        }, delay + totalSegmentTime);
+        totalSegmentTime += showTime + pauseTime;
     });
+    
+    const totalTime = delay + totalSegmentTime;
 
     setTimeout(() => {
         game.isPlaying = false;
@@ -373,16 +414,17 @@ function playSequence() {
         game.playerSequence = [];
         updateStatus('Your turn!');
         startTimer();
-    }, delay + game.sequence.length * (settings.showTime + settings.pauseTime));
+    }, totalTime);
 }
 
-function showColor(color) {
+function showColor(color, customTime) {
     const segment = document.querySelector(`.simon-segment.${color}`);
     segment.classList.add('active');
     playTone(colorFrequencies[color], 200);
+    const displayTime = customTime || difficultySettings[game.difficulty].showTime;
     setTimeout(() => {
         segment.classList.remove('active');
-    }, difficultySettings[game.difficulty].showTime);
+    }, displayTime);
 }
 
 document.querySelectorAll('.simon-segment').forEach(segment => {
@@ -394,6 +436,7 @@ document.querySelectorAll('.simon-segment').forEach(segment => {
 
 function handleColorClick(color) {
     if (!game.isPlayerTurn || game.isPlaying) return;
+    if (game.difficulty !== 'special' && (color === 'orange' || color === 'purple')) return;
     showColor(color);
     game.playerSequence.push(color);
 

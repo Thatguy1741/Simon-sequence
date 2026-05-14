@@ -28,6 +28,7 @@
                 <button class="difficulty-btn" data-difficulty="easy">Easy</button>
                 <button class="difficulty-btn" data-difficulty="normal">Normal</button>
                 <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                <button class="difficulty-btn special" data-difficulty="special">Special</button>
             </div>
 
             <div id="mode-selector">
@@ -71,9 +72,11 @@
                 <div class="simon-segment red" data-color="red"></div>
                 <div class="simon-segment yellow" data-color="yellow"></div>
                 <div class="simon-segment blue" data-color="blue"></div>
+                <div class="simon-segment orange" data-color="orange"></div>
+                <div class="simon-segment purple" data-color="purple"></div>
                 <div id="simon-center">S</div>
             </div>
-            <div id="key-hint">Keys: 1=Green 2=Red 3=Yellow 4=Blue</div>
+            <div id="key-hint">Keys: 1=Green 2=Red 3=Yellow 4=Blue <span id="special-keys" style="display:none;">5=Orange 6=Purple</span></div>
             <div id="game-status">Watch the sequence...</div>
         </div>
 
@@ -91,6 +94,7 @@
                     <button class="lb-tab" data-lb-difficulty="easy">Easy</button>
                     <button class="lb-tab" data-lb-difficulty="normal">Normal</button>
                     <button class="lb-tab" data-lb-difficulty="hard">Hard</button>
+                    <button class="lb-tab" data-lb-difficulty="special">Special</button>
                 </div>
                 <div id="leaderboard-entries"></div>
                 <button id="close-leaderboard">Close</button>
