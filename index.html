@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simon Says</title>
+    <title>Simon Says - Launcher</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,7 +11,8 @@
         <div id="menu">
             <h1 id="title">SIMON SAYS</h1>
             <p id="subtitle">Test your memory...</p>
-            
+
+            <!-- Text input: Player name -->
             <div id="name-section">
                 <label for="player-name">Player Name:</label>
                 <div id="name-row">
@@ -24,13 +25,26 @@
                 </div>
             </div>
 
-            <div id="difficulty-selector">
-                <button class="difficulty-btn" data-difficulty="easy">Easy</button>
-                <button class="difficulty-btn" data-difficulty="normal">Normal</button>
-                <button class="difficulty-btn" data-difficulty="hard">Hard</button>
-                <button class="difficulty-btn special" data-difficulty="special">Special</button>
+            <!-- Dropdown: Difficulty -->
+            <div id="settings-row">
+                <label for="difficulty-select">Difficulty:</label>
+                <select id="difficulty-select">
+                    <option value="easy">Easy</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Hard</option>
+                    <option value="special">Special</option>
+                </select>
             </div>
 
+            <!-- Radio buttons: Color scheme -->
+            <div id="color-scheme-selector">
+                <span id="scheme-label">Theme:</span>
+                <label class="radio-label"><input type="radio" name="scheme" value="classic" checked> Classic</label>
+                <label class="radio-label"><input type="radio" name="scheme" value="neon"> Neon</label>
+                <label class="radio-label"><input type="radio" name="scheme" value="pastel"> Pastel</label>
+            </div>
+
+            <!-- Checkbox: Timer mode -->
             <div id="mode-selector">
                 <label class="mode-toggle">
                     <input type="checkbox" id="timer-toggle">
@@ -38,20 +52,20 @@
                 </label>
             </div>
 
-            <div id="color-scheme-selector">
-                <span id="scheme-label">Theme:</span>
-                <button class="scheme-btn" data-scheme="classic">Classic</button>
-                <button class="scheme-btn" data-scheme="neon">Neon</button>
-                <button class="scheme-btn" data-scheme="pastel">Pastel</button>
-            </div>
-
+            <!-- Volume -->
             <div id="volume-section">
                 <label>Volume: <span id="volume-label">70%</span></label>
                 <input type="range" id="volume-slider" min="0" max="100" value="70">
                 <button id="mute-btn">🔊</button>
             </div>
 
-            <button id="start-btn">START</button>
+            <!-- Buttons: Start, Reset, Save, Load -->
+            <div id="action-buttons">
+                <button id="start-btn">START</button>
+                <button id="reset-settings-btn">Reset</button>
+                <button id="save-settings-btn">Save</button>
+                <button id="load-settings-btn">Load</button>
+            </div>
 
             <div id="score-section">
                 <p id="high-score">High Score: <span id="high-score-value">0</span></p>
@@ -59,34 +73,7 @@
             </div>
         </div>
 
-        <div id="game-area" style="display: none;">
-            <div id="sequence-display">
-                <span id="sequence-number">1</span>
-            </div>
-            <div id="timer-display" style="display: none;">
-                <span id="timer-value">0</span>
-                <span id="timer-unit">s</span>
-            </div>
-            <div id="simon">
-                <div class="simon-segment green" data-color="green"></div>
-                <div class="simon-segment red" data-color="red"></div>
-                <div class="simon-segment yellow" data-color="yellow"></div>
-                <div class="simon-segment blue" data-color="blue"></div>
-                <div class="simon-segment orange" data-color="orange"></div>
-                <div class="simon-segment purple" data-color="purple"></div>
-                <div id="simon-center">S</div>
-            </div>
-            <div id="key-hint">Keys: 1=Green 2=Red 3=Yellow 4=Blue <span id="special-keys" style="display:none;">5=Orange 6=Purple</span></div>
-            <div id="game-status">Watch the sequence...</div>
-        </div>
-
-        <div id="game-over" style="display: none;">
-            <h2 id="death-message">Game Over</h2>
-            <p id="final-score"></p>
-            <button id="restart-btn">Play Again</button>
-            <button id="menu-btn">Menu</button>
-        </div>
-
+        <!-- Leaderboard -->
         <div id="leaderboard-modal" style="display: none;">
             <div id="leaderboard-content">
                 <h2>Leaderboard</h2>
@@ -119,7 +106,7 @@
             </div>
         </div>
 
-        <!-- Admin Login Button -->
+        <!-- Admin Button -->
         <button id="admin-btn">Admin</button>
 
         <!-- Admin Login Modal -->
@@ -158,6 +145,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="launcher.js"></script>
 </body>
 </html>

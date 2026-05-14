@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says - Instructions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="menu" style="max-width: 600px;">
+            <h1 id="title">SIMON SAYS</h1>
+            <h2 style="color: #e94560; margin-bottom: 20px;">How to Play</h2>
+            <div id="instructions-text">
+                <p><strong>Objective:</strong> Watch the sequence of colors and repeat it correctly. The sequence grows each round!</p>
+                <br>
+                <p><strong>How to Play:</strong></p>
+                <p>1. Watch the sequence of flashing colors.</p>
+                <p>2. Click the colors in the same order.</p>
+                <p>3. Each correct round adds a new color to the sequence.</p>
+                <p>4. One wrong click ends the game.</p>
+                <br>
+                <p><strong>Difficulty Levels:</strong></p>
+                <p><strong>Easy:</strong> Slow speed, generous timer</p>
+                <p><strong>Normal:</strong> Moderate speed</p>
+                <p><strong>Hard:</strong> Fast speed, short timer</p>
+                <p><strong>Special:</strong> 6 colors, random flash speed, Simon wheel rotates every 5 rounds!</p>
+                <br>
+                <p><strong>Controls:</strong></p>
+                <p>Click the colored segments, or use keyboard keys 1-4 (1-6 in Special mode).</p>
+                <br>
+                <p><strong>Timer Mode:</strong> Enable in launcher settings. You have limited time per round!</p>
+            </div>
+            <br>
+            <button id="back-to-launcher-btn">Back to Launcher</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('back-to-launcher-btn').addEventListener('click', () => {
+            window.close();
+        });
+    </script>
+</body>
+</html>

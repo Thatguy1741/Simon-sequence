@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says - Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-area">
+            <div id="sequence-display">
+                <span id="sequence-number">1</span>
+            </div>
+            <div id="timer-display" style="display: none;">
+                <span id="timer-value">0</span>
+                <span id="timer-unit">s</span>
+            </div>
+            <div id="simon">
+                <div class="simon-segment green" data-color="green"></div>
+                <div class="simon-segment red" data-color="red"></div>
+                <div class="simon-segment yellow" data-color="yellow"></div>
+                <div class="simon-segment blue" data-color="blue"></div>
+                <div class="simon-segment orange" data-color="orange"></div>
+                <div class="simon-segment purple" data-color="purple"></div>
+                <div id="simon-center">S</div>
+            </div>
+            <div id="key-hint">Keys: 1=Green 2=Red 3=Yellow 4=Blue <span id="special-keys" style="display:none;">5=Orange 6=Purple</span></div>
+            <div id="game-status">Watch the sequence...</div>
+
+            <div id="game-buttons">
+                <button id="game-start-btn">Start</button>
+                <button id="game-reset-btn">Reset</button>
+                <button id="back-btn">Back to Settings</button>
+            </div>
+        </div>
+
+        <div id="game-over" style="display: none;">
+            <h2 id="death-message">Game Over</h2>
+            <p id="final-score"></p>
+            <button id="back-menu-btn">Back to Settings</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
