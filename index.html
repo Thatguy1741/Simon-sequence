@@ -11,18 +11,60 @@
         <div id="menu">
             <h1 id="title">SIMON SAYS</h1>
             <p id="subtitle">Test your memory...</p>
+            
+            <div id="name-section">
+                <label for="player-name">Player Name:</label>
+                <div id="name-row">
+                    <input type="text" id="player-name" maxlength="15" placeholder="Enter name">
+                    <button id="lock-btn">🔓</button>
+                </div>
+                <div id="password-section" style="display: none;">
+                    <input type="password" id="password-input" maxlength="20" placeholder="Set a password">
+                    <button id="save-password">Save</button>
+                </div>
+            </div>
+
             <div id="difficulty-selector">
                 <button class="difficulty-btn" data-difficulty="easy">Easy</button>
                 <button class="difficulty-btn" data-difficulty="normal">Normal</button>
                 <button class="difficulty-btn" data-difficulty="hard">Hard</button>
             </div>
+
+            <div id="mode-selector">
+                <label class="mode-toggle">
+                    <input type="checkbox" id="timer-toggle">
+                    <span id="toggle-label">Timer Mode</span>
+                </label>
+            </div>
+
+            <div id="color-scheme-selector">
+                <span id="scheme-label">Theme:</span>
+                <button class="scheme-btn" data-scheme="classic">Classic</button>
+                <button class="scheme-btn" data-scheme="neon">Neon</button>
+                <button class="scheme-btn" data-scheme="pastel">Pastel</button>
+            </div>
+
+            <div id="volume-section">
+                <label>Volume: <span id="volume-label">70%</span></label>
+                <input type="range" id="volume-slider" min="0" max="100" value="70">
+                <button id="mute-btn">🔊</button>
+            </div>
+
             <button id="start-btn">START</button>
-            <p id="high-score">High Score: <span id="high-score-value">0</span></p>
+
+            <div id="score-section">
+                <p id="high-score">High Score: <span id="high-score-value">0</span></p>
+                <button id="leaderboard-btn">Leaderboard</button>
+            </div>
         </div>
 
         <div id="game-area" style="display: none;">
             <div id="sequence-display">
                 <span id="sequence-number">1</span>
+            </div>
+            <div id="timer-display" style="display: none;">
+                <span id="timer-value">0</span>
+                <span id="timer-unit">s</span>
             </div>
             <div id="simon">
                 <div class="simon-segment green" data-color="green"></div>
@@ -31,6 +73,7 @@
                 <div class="simon-segment blue" data-color="blue"></div>
                 <div id="simon-center">S</div>
             </div>
+            <div id="key-hint">Keys: 1=Green 2=Red 3=Yellow 4=Blue</div>
             <div id="game-status">Watch the sequence...</div>
         </div>
 
@@ -39,6 +82,19 @@
             <p id="final-score"></p>
             <button id="restart-btn">Play Again</button>
             <button id="menu-btn">Menu</button>
+        </div>
+
+        <div id="leaderboard-modal" style="display: none;">
+            <div id="leaderboard-content">
+                <h2>Leaderboard</h2>
+                <div id="leaderboard-tabs">
+                    <button class="lb-tab" data-lb-difficulty="easy">Easy</button>
+                    <button class="lb-tab" data-lb-difficulty="normal">Normal</button>
+                    <button class="lb-tab" data-lb-difficulty="hard">Hard</button>
+                </div>
+                <div id="leaderboard-entries"></div>
+                <button id="close-leaderboard">Close</button>
+            </div>
         </div>
     </div>
 
