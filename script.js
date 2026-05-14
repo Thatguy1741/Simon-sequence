@@ -72,7 +72,15 @@ function playTone(frequency, duration = 200) {
 // Load saved data
 function loadData() {
     const lb = localStorage.getItem('simonLeaderboard');
-    if (lb) game.leaderboard = JSON.parse(lb);
+    if (lb) {
+        const parsed = JSON.parse(lb);
+        game.leaderboard = { easy: [], normal: [], hard: [], special: [] };
+        Object.keys(parsed).forEach(key => {
+            if (game.leaderboard[key] !== undefined) {
+                game.leaderboard[key] = parsed[key];
+            }
+        });
+    }
     
     // Clean existing duplicates
     Object.keys(game.leaderboard).forEach(diff => {
@@ -475,7 +483,7 @@ function gameOver() {
     setTimeout(() => {
         document.getElementById('death-message').textContent = 'Game Over';
         document.getElementById('final-score').textContent = `${document.getElementById('player-name').value.trim()} reached sequence ${game.score + 1} on ${game.difficulty}`;
-        document.getElementById('game-over').style.display = 'block';
+        document.getElementById('game-over').style.display = 'flex';
     }, 500);
 }
 
