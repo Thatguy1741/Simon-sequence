@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="menu">
+            <h1 id="title">SIMON SAYS</h1>
+            <p id="subtitle">Test your memory...</p>
+            <div id="difficulty-selector">
+                <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+                <button class="difficulty-btn" data-difficulty="normal">Normal</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+            </div>
+            <button id="start-btn">START</button>
+            <p id="high-score">High Score: <span id="high-score-value">0</span></p>
+        </div>
+
+        <div id="game-area" style="display: none;">
+            <div id="sequence-display">
+                <span id="sequence-number">1</span>
+            </div>
+            <div id="simon">
+                <div class="simon-segment green" data-color="green"></div>
+                <div class="simon-segment red" data-color="red"></div>
+                <div class="simon-segment yellow" data-color="yellow"></div>
+                <div class="simon-segment blue" data-color="blue"></div>
+                <div id="simon-center">S</div>
+            </div>
+            <div id="game-status">Watch the sequence...</div>
+        </div>
+
+        <div id="game-over" style="display: none;">
+            <h2 id="death-message">Game Over</h2>
+            <p id="final-score"></p>
+            <button id="restart-btn">Play Again</button>
+            <button id="menu-btn">Menu</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
