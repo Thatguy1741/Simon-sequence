@@ -266,12 +266,7 @@ document.addEventListener('keydown', (e) => {
             handleColorClick(color);
         }
     }
-    if (e.key === 'Enter' || e.key === ' ') {
-        if (document.getElementById('menu').style.display !== 'none') {
-            e.preventDefault();
-            startGame();
-        }
-    }
+
 });
 // End Change 6
 
