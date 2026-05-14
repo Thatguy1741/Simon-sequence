@@ -595,3 +595,418 @@ body.pastel-bg #simon-center { background: #2a1a2e; border-color: #ff8b94; color
 #close-leaderboard:hover {
     transform: scale(1.05);
 }
+
+/* Splash text */
+#subtitle {
+    color: #666;
+    transition: color 0.3s;
+}
+
+/* Feedback button */
+#feedback-btn {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    padding: 8px 16px;
+    font-size: 13px;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    color: #666;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+#feedback-btn:hover {
+    border-color: #e94560;
+    color: #fff;
+}
+
+/* Admin button */
+#admin-btn {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    font-size: 13px;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    color: #666;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all 0.3s;
+    z-index: 100;
+}
+
+#admin-btn:hover {
+    border-color: #9b59b6;
+    color: #bb86fc;
+}
+
+/* Feedback Modal */
+#feedback-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
+
+#feedback-content {
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 10px;
+    padding: 30px;
+    min-width: 350px;
+    text-align: center;
+}
+
+#feedback-content h2 {
+    color: #e94560;
+    margin-bottom: 20px;
+}
+
+#feedback-content label {
+    display: block;
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+#feedback-name {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background: #1a1a2e;
+    border: 2px solid #0f3460;
+    color: #fff;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+#feedback-name:focus {
+    border-color: #e94560;
+}
+
+#feedback-text {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    background: #1a1a2e;
+    border: 2px solid #0f3460;
+    color: #fff;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    outline: none;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+#feedback-text:focus {
+    border-color: #e94560;
+}
+
+#feedback-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#submit-feedback {
+    padding: 10px 30px;
+    background: #e94560;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+#submit-feedback:hover {
+    transform: scale(1.05);
+}
+
+#close-feedback {
+    padding: 10px 30px;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    color: #888;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+#close-feedback:hover {
+    border-color: #e94560;
+    color: #fff;
+}
+
+/* Admin Login Modal */
+#admin-login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
+
+#admin-login-content {
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 10px;
+    padding: 30px;
+    min-width: 320px;
+    text-align: center;
+}
+
+#admin-login-content h2 {
+    color: #bb86fc;
+    margin-bottom: 20px;
+}
+
+#admin-username, #admin-password {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background: #1a1a2e;
+    border: 2px solid #0f3460;
+    color: #fff;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+#admin-username:focus, #admin-password:focus {
+    border-color: #bb86fc;
+}
+
+#admin-login-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#admin-login-btn {
+    padding: 10px 30px;
+    background: #9b59b6;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+#admin-login-btn:hover {
+    background: #bb86fc;
+    transform: scale(1.05);
+}
+
+#close-admin-login {
+    padding: 10px 30px;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    color: #888;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+#close-admin-login:hover {
+    border-color: #bb86fc;
+    color: #fff;
+}
+
+/* Admin Panel */
+#admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+}
+
+#admin-content {
+    background: #16213e;
+    border: 2px solid #9b59b6;
+    border-radius: 10px;
+    padding: 30px;
+    min-width: 450px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: center;
+}
+
+#admin-content h2 {
+    color: #bb86fc;
+    margin-bottom: 20px;
+}
+
+#admin-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.admin-tab {
+    padding: 8px 20px;
+    background: #1a1a2e;
+    border: 2px solid #0f3460;
+    color: #888;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.admin-tab:hover {
+    border-color: #bb86fc;
+    color: #fff;
+}
+
+.admin-tab.active {
+    border-color: #bb86fc;
+    color: #bb86fc;
+    background: #2a1a3e;
+}
+
+/* Admin leaderboard */
+#admin-lb-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.admin-lb-tab {
+    padding: 6px 14px;
+    font-size: 13px;
+    background: #1a1a2e;
+    border: 2px solid #0f3460;
+    color: #888;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.admin-lb-tab:hover {
+    border-color: #bb86fc;
+    color: #fff;
+}
+
+.admin-lb-tab.active {
+    border-color: #bb86fc;
+    color: #bb86fc;
+    background: #2a1a3e;
+}
+
+#admin-lb-entries {
+    min-height: 100px;
+    margin-bottom: 15px;
+}
+
+.admin-lb-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 15px;
+    border-bottom: 1px solid #0f3460;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.admin-lb-entry .delete-entry {
+    padding: 4px 10px;
+    font-size: 12px;
+    background: #e94560;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.admin-lb-entry .delete-entry:hover {
+    background: #ff6b81;
+    transform: scale(1.05);
+}
+
+/* Admin feedback */
+#admin-feedback-view {
+    min-height: 100px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.admin-feedback-entry {
+    padding: 12px 15px;
+    border-bottom: 1px solid #0f3460;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.admin-feedback-entry .fb-name {
+    color: #bb86fc;
+    font-weight: bold;
+}
+
+.admin-feedback-entry .fb-text {
+    color: #ddd;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.admin-feedback-entry .fb-date {
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+#admin-logout-btn {
+    padding: 10px 30px;
+    background: #9b59b6;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+#admin-logout-btn:hover {
+    background: #bb86fc;
+    transform: scale(1.05);
+}

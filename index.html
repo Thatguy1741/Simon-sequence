@@ -100,6 +100,62 @@
                 <button id="close-leaderboard">Close</button>
             </div>
         </div>
+
+        <!-- Feedback Button -->
+        <button id="feedback-btn">Feedback</button>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" style="display: none;">
+            <div id="feedback-content">
+                <h2>Send Feedback</h2>
+                <label for="feedback-name">Your Name:</label>
+                <input type="text" id="feedback-name" maxlength="15" placeholder="Enter name">
+                <label for="feedback-text">Feedback:</label>
+                <textarea id="feedback-text" rows="4" placeholder="Tell us what you think..."></textarea>
+                <div id="feedback-buttons">
+                    <button id="submit-feedback">Submit</button>
+                    <button id="close-feedback">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Button -->
+        <button id="admin-btn">Admin</button>
+
+        <!-- Admin Login Modal -->
+        <div id="admin-login-modal" style="display: none;">
+            <div id="admin-login-content">
+                <h2>Admin Login</h2>
+                <input type="text" id="admin-username" placeholder="Username">
+                <input type="password" id="admin-password" placeholder="Password">
+                <div id="admin-login-buttons">
+                    <button id="admin-login-btn">Login</button>
+                    <button id="close-admin-login">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" style="display: none;">
+            <div id="admin-content">
+                <h2>Admin Panel</h2>
+                <div id="admin-tabs">
+                    <button class="admin-tab active" data-admin-tab="leaderboard">Leaderboard</button>
+                    <button class="admin-tab" data-admin-tab="feedback">Feedback</button>
+                </div>
+                <div id="admin-leaderboard-view">
+                    <div id="admin-lb-tabs">
+                        <button class="admin-lb-tab" data-admin-lb="easy">Easy</button>
+                        <button class="admin-lb-tab" data-admin-lb="normal">Normal</button>
+                        <button class="admin-lb-tab" data-admin-lb="hard">Hard</button>
+                        <button class="admin-lb-tab" data-admin-lb="special">Special</button>
+                    </div>
+                    <div id="admin-lb-entries"></div>
+                </div>
+                <div id="admin-feedback-view" style="display: none;"></div>
+                <button id="admin-logout-btn">Logout</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

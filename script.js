@@ -320,6 +320,8 @@ function startGame() {
     initAudio();
     document.getElementById('menu').style.display = 'none';
     document.getElementById('game-area').style.display = 'flex';
+    document.getElementById('feedback-btn').style.display = 'none';
+    document.getElementById('admin-btn').style.display = 'none';
     resetGame();
     playSequence();
 }
@@ -480,6 +482,8 @@ function gameOver() {
     updateStatus('Wrong!');
     saveScore();
     document.getElementById('game-area').style.display = 'none';
+    document.getElementById('feedback-btn').style.display = 'none';
+    document.getElementById('admin-btn').style.display = 'none';
     setTimeout(() => {
         document.getElementById('death-message').textContent = 'Game Over';
         document.getElementById('final-score').textContent = `${document.getElementById('player-name').value.trim()} reached sequence ${game.score + 1} on ${game.difficulty}`;
@@ -492,8 +496,182 @@ function showMenu() {
     document.getElementById('game-area').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('menu').style.display = 'block';
+    document.getElementById('feedback-btn').style.display = 'block';
+    document.getElementById('admin-btn').style.display = 'block';
     clearInterval(game.timerInterval);
     applyScheme('classic');
     document.querySelectorAll('.scheme-btn')[0].style.borderColor = '#e94560';
     document.querySelectorAll('.scheme-btn').forEach((b, i) => { if (i > 0) b.style.borderColor = '#0f3460'; });
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-login-modal').style.display = 'none';
+}
+
+// Random splash text
+const splashes = [
+    "Test your memory...",
+    "Try Terraria",
+    "Created by Microsoft",
+    "Billy Joe was here",
+    "Now with 6 colors!",
+    "Don't blink...",
+    "How high can you go?",
+    "Simon says pay attention",
+    "Rotating since 2025",
+    "Special mode included!",
+    "Made with ❤️",
+    "Also try Minecraft",
+    "Patience is key",
+    "Can you beat hard?",
+    "4 colors? 6 colors!",
+    "Watch closely...",
+    "The wheel turns",
+    "Trust your memory",
+    "One wrong click...",
+    "Sequence detected",
+    "glhf",
+    "Now in 3D! (not really)",
+    "Probably not a game",
+    "Not affiliated with Hasbro",
+];
+
+function setSplash() {
+    document.getElementById('subtitle').textContent = splashes[Math.floor(Math.random() * splashes.length)];
+}
+setSplash();
+
+// Feedback system
+let feedbackData = JSON.parse(localStorage.getItem('simonFeedback') || '[]');
+
+document.getElementById('feedback-btn').addEventListener('click', () => {
+    document.getElementById('feedback-name').value = document.getElementById('player-name').value;
+    document.getElementById('feedback-text').value = '';
+    document.getElementById('feedback-modal').style.display = 'flex';
+});
+
+document.getElementById('close-feedback').addEventListener('click', () => {
+    document.getElementById('feedback-modal').style.display = 'none';
+});
+
+document.getElementById('submit-feedback').addEventListener('click', () => {
+    const name = document.getElementById('feedback-name').value.trim() || 'Anonymous';
+    const text = document.getElementById('feedback-text').value.trim();
+    if (!text) { alert('Please enter feedback text.'); return; }
+    feedbackData.push({ name, text, date: new Date().toLocaleDateString() });
+    localStorage.setItem('simonFeedback', JSON.stringify(feedbackData));
+    document.getElementById('feedback-modal').style.display = 'none';
+    alert('Thank you for your feedback!');
+});
+
+// Admin login
+document.getElementById('admin-btn').addEventListener('click', () => {
+    document.getElementById('admin-username').value = '';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('admin-login-modal').style.display = 'flex';
+});
+
+document.getElementById('close-admin-login').addEventListener('click', () => {
+    document.getElementById('admin-login-modal').style.display = 'none';
+});
+
+document.getElementById('admin-login-btn').addEventListener('click', () => {
+    const user = document.getElementById('admin-username').value.trim();
+    const pass = document.getElementById('admin-password').value.trim();
+    if (user === 'admin123' && pass === '12345678') {
+        document.getElementById('admin-login-modal').style.display = 'none';
+        openAdminPanel();
+    } else {
+        alert('Invalid credentials');
+    }
+});
+
+// Admin panel
+function openAdminPanel() {
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'flex';
+    showAdminLeaderboard('easy');
+}
+
+function closeAdminPanel() {
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('feedback-btn').style.display = 'block';
+    document.getElementById('admin-btn').style.display = 'block';
+}
+
+document.getElementById('admin-logout-btn').addEventListener('click', closeAdminPanel);
+
+// Admin tab switching
+document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const view = tab.dataset.adminTab;
+        document.getElementById('admin-leaderboard-view').style.display = view === 'leaderboard' ? 'block' : 'none';
+        document.getElementById('admin-feedback-view').style.display = view === 'feedback' ? 'block' : 'none';
+        if (view === 'feedback') showAdminFeedback();
+        if (view === 'leaderboard') showAdminLeaderboard('easy');
+    });
+});
+
+// Admin leaderboard
+document.querySelectorAll('.admin-lb-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-lb-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        showAdminLeaderboard(tab.dataset.adminLb);
+    });
+});
+
+function showAdminLeaderboard(diff) {
+    const container = document.getElementById('admin-lb-entries');
+    let scores = game.leaderboard[diff] || [];
+    
+    // Highlight current tab
+    document.querySelectorAll('.admin-lb-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.adminLb === diff);
+    });
+    
+    container.innerHTML = '<div class="leaderboard-entry"><span>Player</span><span>Score</span><span></span></div>';
+    if (scores.length === 0) {
+        container.innerHTML = '<p style="color:#666;padding:20px;">No scores yet</p>';
+        return;
+    }
+    scores.sort((a, b) => b.score - a.score);
+    scores.forEach((entry, i) => {
+        const div = document.createElement('div');
+        div.className = 'admin-lb-entry';
+        div.innerHTML = `<span>${i+1}. ${entry.name}</span><span>${entry.score}</span><button class="delete-entry" data-name="${entry.name}" data-diff="${diff}">Remove</button>`;
+        container.appendChild(div);
+    });
+    
+    container.querySelectorAll('.delete-entry').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const name = btn.dataset.name;
+            const diff = btn.dataset.diff;
+            if (confirm(`Remove "${name}" from ${diff} leaderboard?`)) {
+                game.leaderboard[diff] = game.leaderboard[diff].filter(e => e.name !== name);
+                localStorage.setItem('simonLeaderboard', JSON.stringify(game.leaderboard));
+                showAdminLeaderboard(diff);
+            }
+        });
+    });
+}
+
+// Admin feedback viewer
+function showAdminFeedback() {
+    const container = document.getElementById('admin-feedback-view');
+    feedbackData = JSON.parse(localStorage.getItem('simonFeedback') || '[]');
+    
+    if (feedbackData.length === 0) {
+        container.innerHTML = '<p style="color:#666;padding:20px;text-align:center;">No feedback yet</p>';
+        return;
+    }
+    
+    container.innerHTML = '';
+    feedbackData.slice().reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'admin-feedback-entry';
+        div.innerHTML = `<div class="fb-name">${entry.name}</div><div class="fb-text">"${entry.text}"</div><div class="fb-date">${entry.date}</div>`;
+        container.appendChild(div);
+    });
 }
