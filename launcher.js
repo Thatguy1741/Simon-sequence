@@ -1,5 +1,7 @@
 // Launcher settings and data management
+// JavaScript for the launcher page (index.html)
 
+// Object to track game settings and high-level state
 const game = {
     difficulty: 'normal',
     currentScheme: 'classic',
@@ -9,7 +11,14 @@ const game = {
     isMuted: false,
 };
 
-// Cookie helpers
+// Change 1: Cookie storage for persistent player data
+// Previously only localStorage was used. Cookies now store player name
+// and best score across browser sessions with expiration.
+/* Old approach used:
+   localStorage.setItem('simonPlayerName', name);
+   localStorage.getItem('simonHighScore');
+*/
+// Replaced with cookie-based storage plus localStorage fallback
 function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -20,12 +29,9 @@ function getCookie(name) {
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? decodeURIComponent(match[2]) : null;
 }
+// End Change 1
 
-function deleteCookie(name) {
-    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-}
-
-// Load saved data
+// Load saved leaderboard data from localStorage and player name from cookies
 function loadData() {
     const lb = localStorage.getItem('simonLeaderboard');
     if (lb) {
@@ -37,6 +43,7 @@ function loadData() {
             }
         });
     }
+    // Deduplicate leaderboard entries across all difficulties
     Object.keys(game.leaderboard).forEach(diff => {
         const seen = {};
         game.leaderboard[diff] = game.leaderboard[diff].filter(entry => {
@@ -53,7 +60,7 @@ function loadData() {
     });
     localStorage.setItem('simonLeaderboard', JSON.stringify(game.leaderboard));
 
-    // Load from cookies
+    // Load player name and best score from cookies
     const cookieName = getCookie('simonPlayerName');
     const cookieScore = getCookie('simonBestScore');
     if (cookieName) document.getElementById('player-name').value = cookieName;
@@ -101,6 +108,11 @@ function loadSettings() {
     alert('Settings loaded!');
 }
 
+// Change 2: Dropdown for difficulty, radio buttons for theme, Save/Load/Reset buttons
+// Previously used difficulty buttons (<button class="difficulty-btn">) and scheme buttons
+// (<button class="scheme-btn">) which could not use form submit events.
+// Replaced with: <select> dropdown for difficulty, <input type="radio"> for color scheme,
+// and dedicated Save, Load, Reset buttons for settings persistence.
 function resetSettings() {
     document.getElementById('player-name').value = '';
     document.getElementById('difficulty-select').value = 'normal';
@@ -112,8 +124,9 @@ function resetSettings() {
     game.isMuted = false;
     document.getElementById('mute-btn').textContent = '🔊';
 }
+// End Change 2
 
-// Random splash text
+// Random splash text array — displays a different message under the logo each load
 const splashes = [
     "Test your memory...",
     "Try Terraria",
@@ -146,7 +159,7 @@ function setSplash() {
 }
 setSplash();
 
-// Password protection
+// Password protection — saved per player name in localStorage
 const passwordProtected = JSON.parse(localStorage.getItem('simonPasswords') || '{}');
 
 document.getElementById('lock-btn').addEventListener('click', () => {
@@ -173,7 +186,7 @@ function checkPassword(name) {
 document.getElementById('player-name').addEventListener('input', (e) => checkPassword(e.target.value));
 checkPassword(document.getElementById('player-name').value);
 
-// Leaderboard
+// Leaderboard — displays top 10 scores per difficulty with deduplication
 document.getElementById('leaderboard-btn').addEventListener('click', showLeaderboard);
 document.getElementById('close-leaderboard').addEventListener('click', () => {
     document.getElementById('leaderboard-modal').style.display = 'none';
@@ -215,12 +228,12 @@ document.querySelectorAll('.lb-tab').forEach(tab => {
     tab.addEventListener('click', () => showLeaderboardTab(tab.dataset.lbDifficulty));
 });
 
-// Timer toggle
+// Timer mode checkbox toggle
 document.getElementById('timer-toggle').addEventListener('change', (e) => {
     document.getElementById('toggle-label').textContent = e.target.checked ? 'Timer: ON' : 'Timer Mode';
 });
 
-// Volume
+// Volume slider and mute button
 document.getElementById('volume-slider').addEventListener('input', (e) => {
     document.getElementById('volume-label').textContent = e.target.value + '%';
 });
@@ -230,7 +243,10 @@ document.getElementById('mute-btn').addEventListener('click', () => {
     document.getElementById('mute-btn').textContent = game.isMuted ? '🔇' : '🔊';
 });
 
-// START button - opens game.html in a new window
+// Change 3: Prompt dialog for name if not entered
+// Previously the name was silently set to 'Anonymous' with no user interaction.
+// Now uses prompt() to ask the player for their name before falling back to Anonymous.
+// Also stores settings in localStorage then opens game.html as a separate popup window.
 document.getElementById('start-btn').addEventListener('click', () => {
     const name = document.getElementById('player-name').value.trim();
     if (!name) {
@@ -242,6 +258,7 @@ document.getElementById('start-btn').addEventListener('click', () => {
         }
     }
     const playerName = document.getElementById('player-name').value.trim();
+    // Check password if name is protected
     if (passwordProtected[playerName]) {
         const entered = prompt('This name is private. Enter password for ' + playerName + ':');
         if (entered !== passwordProtected[playerName]) {
@@ -268,8 +285,9 @@ document.getElementById('start-btn').addEventListener('click', () => {
 
     window.open('game.html', 'SimonGame', 'width=500,height=700');
 });
+// End Change 3
 
-// Reset, Save, Load buttons
+// Reset, Save, Load buttons with confirm() dialog for reset
 document.getElementById('reset-settings-btn').addEventListener('click', () => {
     if (confirm('Reset all settings to default?')) {
         resetSettings();
@@ -279,7 +297,8 @@ document.getElementById('reset-settings-btn').addEventListener('click', () => {
 document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
 document.getElementById('load-settings-btn').addEventListener('click', loadSettings);
 
-// Feedback system
+// Feedback system — stores feedback in localStorage for admin to view
+// SS3 change 4: Wrapped in <form> with submit event handler
 let feedbackData = JSON.parse(localStorage.getItem('simonFeedback') || '[]');
 
 document.getElementById('feedback-btn').addEventListener('click', () => {
@@ -292,7 +311,8 @@ document.getElementById('close-feedback').addEventListener('click', () => {
     document.getElementById('feedback-modal').style.display = 'none';
 });
 
-document.getElementById('submit-feedback').addEventListener('click', () => {
+function submitFeedback(event) {
+    if (event) event.preventDefault();
     const name = document.getElementById('feedback-name').value.trim() || 'Anonymous';
     const text = document.getElementById('feedback-text').value.trim();
     if (!text) { alert('Please enter feedback text.'); return; }
@@ -300,9 +320,12 @@ document.getElementById('submit-feedback').addEventListener('click', () => {
     localStorage.setItem('simonFeedback', JSON.stringify(feedbackData));
     document.getElementById('feedback-modal').style.display = 'none';
     alert('Thank you for your feedback!');
-});
+}
 
-// Admin login
+document.getElementById('submit-feedback').addEventListener('click', submitFeedback);
+document.getElementById('feedback-form').addEventListener('submit', submitFeedback);
+
+// Admin login — protected panel for viewing leaderboard entries and feedback
 document.getElementById('admin-btn').addEventListener('click', () => {
     document.getElementById('admin-username').value = '';
     document.getElementById('admin-password').value = '';
@@ -341,6 +364,7 @@ function closeAdminPanel() {
 
 document.getElementById('admin-logout-btn').addEventListener('click', closeAdminPanel);
 
+// Admin tab switching between leaderboard view and feedback view
 document.querySelectorAll('.admin-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -353,6 +377,7 @@ document.querySelectorAll('.admin-tab').forEach(tab => {
     });
 });
 
+// Admin difficulty tab switching within the leaderboard view
 document.querySelectorAll('.admin-lb-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.admin-lb-tab').forEach(t => t.classList.remove('active'));
@@ -379,6 +404,7 @@ function showAdminLeaderboard(diff) {
         div.innerHTML = '<span>' + (i+1) + '. ' + entry.name + '</span><span>' + entry.score + '</span><button class="delete-entry" data-name="' + entry.name + '" data-diff="' + diff + '">Remove</button>';
         container.appendChild(div);
     });
+    // Admin can delete inappropriate leaderboard entries
     container.querySelectorAll('.delete-entry').forEach(btn => {
         btn.addEventListener('click', () => {
             const name = btn.dataset.name;

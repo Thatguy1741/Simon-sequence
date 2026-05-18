@@ -1,10 +1,15 @@
 // Game logic for game.html
+// Handles all game mechanics: sequence generation, playback, user input, scoring
 
+// Web Audio API for generating tones — initialized on first user interaction
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode;
 
+// Color arrays — 4 colors for standard modes, 6 for special mode
 const colors = ['green', 'red', 'yellow', 'blue'];
 const specialColors = ['green', 'red', 'yellow', 'blue', 'orange', 'purple'];
+
+// Frequency mapping for musical tones (in Hz) — each color plays a unique pitch
 const colorFrequencies = {
     green: 392,
     red: 329.63,
@@ -14,6 +19,7 @@ const colorFrequencies = {
     purple: 369.99
 };
 
+// Difficulty presets controlling flash speed, pause between flashes, and timer base
 const difficultySettings = {
     easy: { showTime: 800, pauseTime: 400, timerBase: 8, colors: 4 },
     normal: { showTime: 500, pauseTime: 250, timerBase: 6, colors: 4 },
@@ -21,14 +27,25 @@ const difficultySettings = {
     special: { showTime: 600, pauseTime: 200, timerBase: 5, colors: 6 }
 };
 
-// Read settings from localStorage (set by launcher)
+// Change 4: Two-page architecture
+// Previously the game ran on the same page as the launcher (single-page app).
+// Now the launcher (index.html) saves settings to localStorage, then opens
+// game.html as a separate popup window. This game reads those settings.
+/* Old approach used:
+   document.getElementById('menu').style.display = 'none';
+   document.getElementById('game-area').style.display = 'flex';
+   (everything in one HTML file)
+*/
+// Replaced with: settings passed via localStorage, game in its own window
 const settings = JSON.parse(localStorage.getItem('simonGameSettings') || '{}');
+// End Change 4
 
+// Central game state object — tracks all runtime data for the current session
 const state = {
-    sequence: [],
-    playerSequence: [],
-    isPlaying: false,
-    isPlayerTurn: false,
+    sequence: [],        // The color sequence the player must repeat
+    playerSequence: [],  // The colors the player has clicked so far
+    isPlaying: false,    // True while the sequence is being shown
+    isPlayerTurn: false, // True while waiting for the player's input
     score: 0,
     difficulty: settings.difficulty || 'normal',
     currentScheme: settings.scheme || 'classic',
@@ -37,10 +54,11 @@ const state = {
     timerInterval: null,
     sequenceTimeout: null,
     isMuted: settings.isMuted || false,
-    rotation: 0,
+    rotation: 0,         // Current rotation angle (special mode only)
     gameStarted: false,
 };
 
+// Initialize audio context and gain node for volume control
 function initAudio() {
     if (audioContext.state === 'suspended') audioContext.resume();
     if (!gainNode) {
@@ -50,6 +68,7 @@ function initAudio() {
     gainNode.gain.value = (settings.volume || 70) / 100;
 }
 
+// Play a tone at the given frequency for the specified duration
 function playTone(frequency, duration) {
     if (state.isMuted) return;
     try {
@@ -67,6 +86,7 @@ function playTone(frequency, duration) {
     } catch (e) {}
 }
 
+// Apply a visual color scheme (classic, neon, or pastel) to the Simon wheel
 function applyScheme(scheme) {
     state.currentScheme = scheme;
     const simon = document.getElementById('simon');
@@ -78,6 +98,7 @@ function applyScheme(scheme) {
     }
 }
 
+// Reset all game state for a new game
 function resetGame() {
     state.sequence = [];
     state.playerSequence = [];
@@ -112,6 +133,7 @@ function updateStatus(text) {
     document.getElementById('game-status').textContent = text;
 }
 
+// Timer countdown — decrements each second, triggers game over at 0
 function startTimer() {
     if (!state.timerEnabled) return;
     clearInterval(state.timerInterval);
@@ -129,6 +151,13 @@ function startTimer() {
     }, 1000);
 }
 
+// Change 5: Special mode with 6 colors, random flash speed, and 90-degree rotation
+// Previously only 4 colors with fixed speed were supported.
+// Special mode adds: orange + purple colors, randomized show/pause timing,
+// and the Simon wheel rotates 90 degrees left/right every 5 rounds
+// while the color sequence stays the same.
+// Added markers: specialColors array, random timing in showTime/pauseTime,
+// rotation logic with transform, six-colors CSS class for clip-path segments.
 function playSequence() {
     state.isPlaying = true;
     state.isPlayerTurn = false;
@@ -143,6 +172,7 @@ function playSequence() {
     const settings_d = difficultySettings[state.difficulty];
     let delay = 500;
 
+    // Every 5 rounds in special mode: rotate the Simon wheel 90 degrees
     if (state.difficulty === 'special' && state.sequence.length % 5 === 0) {
         state.rotation = (state.rotation + (Math.random() < 0.5 ? 90 : -90)) % 360;
         document.getElementById('simon').style.transform = 'rotate(' + state.rotation + 'deg)';
@@ -153,6 +183,7 @@ function playSequence() {
     state.sequence.forEach((color) => {
         let showTime = settings_d.showTime;
         let pauseTime = settings_d.pauseTime;
+        // Random speed: each flash has a different duration (150-750ms show, 100-400ms pause)
         if (state.difficulty === 'special') {
             showTime = 150 + Math.random() * 600;
             pauseTime = 100 + Math.random() * 300;
@@ -172,7 +203,9 @@ function playSequence() {
         startTimer();
     }, delay + totalSegmentTime);
 }
+// End Change 5
 
+// Highlight a color segment and play its tone
 function showColor(color, customTime) {
     const segment = document.querySelector('.simon-segment.' + color);
     if (!segment) return;
@@ -184,6 +217,7 @@ function showColor(color, customTime) {
     }, displayTime);
 }
 
+// Handle a color click from the player — checks against the expected sequence
 function handleColorClick(color) {
     if (!state.isPlayerTurn || state.isPlaying) return;
     if (state.difficulty !== 'special' && (color === 'orange' || color === 'purple')) return;
@@ -206,6 +240,7 @@ function handleColorClick(color) {
     }
 }
 
+// Save the player's score to the leaderboard in localStorage
 function saveScore() {
     const name = settings.playerName || 'Anonymous';
     updateHighScore();
@@ -226,6 +261,7 @@ function saveScore() {
     localStorage.setItem('simonLeaderboard', JSON.stringify(lb));
 }
 
+// Update the best score cookie if current score exceeds it
 function updateHighScore() {
     const cookieScore = getCookie('simonBestScore');
     const currentHigh = cookieScore ? parseInt(cookieScore) : 0;
@@ -235,6 +271,7 @@ function updateHighScore() {
     }
 }
 
+// Cookie helpers (shared with launcher)
 function setCookie(name, value, days) {
     const d = new Date();
     d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
@@ -246,6 +283,7 @@ function getCookie(name) {
     return match ? decodeURIComponent(match[2]) : null;
 }
 
+// Save current game state to sessionStorage (allows resuming after refresh)
 function updateSessionStorage() {
     sessionStorage.setItem('simonGameState', JSON.stringify({
         sequence: state.sequence,
@@ -255,6 +293,12 @@ function updateSessionStorage() {
     }));
 }
 
+// Change 6: Game-over overlay with proper cleanup
+// Previously the game-over div had no backdrop (no position:fixed, no background),
+// making it hard to see. Pending timers from playSequence could still fire after
+// game over, causing the sequence to appear to continue.
+// Fixed: full-screen fixed overlay with dark backdrop, and all pending timeouts
+// (both timer interval and sequence timeout) are cleared on game over.
 function gameOver() {
     clearInterval(state.timerInterval);
     clearTimeout(state.sequenceTimeout);
@@ -270,9 +314,11 @@ function gameOver() {
         document.getElementById('game-over').style.display = 'flex';
     }, 500);
 }
+// End Change 6
 
 // --- Event Listeners ---
 
+// Click handlers for each Simon segment
 document.querySelectorAll('.simon-segment').forEach(segment => {
     segment.addEventListener('click', () => {
         if (!state.isPlayerTurn || state.isPlaying) return;
@@ -280,7 +326,7 @@ document.querySelectorAll('.simon-segment').forEach(segment => {
     });
 });
 
-// Keyboard support
+// Keyboard support: keys 1-6 map to the six colors
 document.addEventListener('keydown', (e) => {
     if (state.isPlayerTurn && !state.isPlaying) {
         const keyMap = { '1': 'green', '2': 'red', '3': 'yellow', '4': 'blue', '5': 'orange', '6': 'purple' };
@@ -292,12 +338,12 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Audio context resume
+// Resume audio context on first user interaction (required by browser policy)
 document.addEventListener('click', () => {
     if (audioContext.state === 'suspended') audioContext.resume();
 }, { once: true });
 
-// Start button
+// Start button — begins the game by resetting state and playing the first sequence
 document.getElementById('game-start-btn').addEventListener('click', () => {
     if (!state.gameStarted) {
         state.gameStarted = true;
@@ -308,7 +354,7 @@ document.getElementById('game-start-btn').addEventListener('click', () => {
     }
 });
 
-// Reset button
+// Reset button — confirms with user then resets
 document.getElementById('game-reset-btn').addEventListener('click', () => {
     if (confirm('Reset the current game?')) {
         clearTimeout(state.sequenceTimeout);
@@ -318,15 +364,14 @@ document.getElementById('game-reset-btn').addEventListener('click', () => {
     }
 });
 
-// Back to Settings (from game area)
+// Back to Settings buttons — close the game popup window
 document.getElementById('back-btn').addEventListener('click', () => {
     window.close();
 });
 
-// Back to Settings (from game over)
 document.getElementById('back-menu-btn').addEventListener('click', () => {
     window.close();
 });
 
-// Initialize game display
+// Initialize game display on load
 resetGame();

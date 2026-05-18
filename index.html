@@ -95,10 +95,12 @@
         <div id="feedback-modal" style="display: none;">
             <div id="feedback-content">
                 <h2>Send Feedback</h2>
-                <label for="feedback-name">Your Name:</label>
-                <input type="text" id="feedback-name" maxlength="15" placeholder="Enter name">
-                <label for="feedback-text">Feedback:</label>
-                <textarea id="feedback-text" rows="4" placeholder="Tell us what you think..."></textarea>
+                <form id="feedback-form">
+                    <label for="feedback-name">Your Name:</label>
+                    <input type="text" id="feedback-name" maxlength="15" placeholder="Enter name">
+                    <label for="feedback-text">Feedback:</label>
+                    <textarea id="feedback-text" rows="4" placeholder="Tell us what you think..."></textarea>
+                </form>
                 <div id="feedback-buttons">
                     <button id="submit-feedback">Submit</button>
                     <button id="close-feedback">Cancel</button>
