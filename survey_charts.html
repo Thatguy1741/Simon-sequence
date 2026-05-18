@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey Charts - Simon Says</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -12,288 +11,196 @@
             background: #f5f5f5;
             padding: 30px;
         }
-        h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        h1 { text-align: center; margin-bottom: 5px; color: #333; }
+        .subtitle { text-align: center; margin-bottom: 30px; color: #888; font-size: 13px; }
         .chart-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
         .chart-card {
             background: #fff;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
         }
         .chart-card h3 {
             text-align: center;
             margin-bottom: 15px;
-            color: #555;
+            color: #444;
             font-size: 14px;
         }
-        .chart-card canvas {
-            max-height: 300px;
-        }
-        .chart-card.full {
-            grid-column: 1 / -1;
-        }
-        .chart-card.full canvas {
-            max-height: 400px;
-        }
+        .chart-card.full { grid-column: 1 / -1; }
+        
+        /* Bar chart styles */
+        .bar-chart { display: flex; justify-content: center; align-items: flex-end; gap: 20px; min-height: 200px; padding-top: 10px; }
+        .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .bar { width: 50px; border-radius: 4px 4px 0 0; min-height: 4px; transition: none; position: relative; }
+        .bar-label { font-size: 11px; color: #555; text-align: center; max-width: 80px; }
+        .bar-count { font-size: 13px; font-weight: bold; color: #333; }
+        .bar-value { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: #333; display: none; }
+
+        /* Likert horizontal bars */
+        .likert-chart { display: flex; flex-direction: column; gap: 12px; }
+        .likert-row { display: flex; align-items: center; gap: 12px; }
+        .likert-label { width: 160px; font-size: 12px; color: #444; text-align: right; flex-shrink: 0; }
+        .likert-bar-bg { flex: 1; height: 22px; background: #eee; border-radius: 4px; position: relative; overflow: hidden; }
+        .likert-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 11px; font-weight: bold; color: #fff; min-width: 30px; }
+        .likert-scale { width: 30px; text-align: center; font-size: 11px; color: #888; }
+
+        /* Pie chart using conic-gradient */
+        .pie-chart { display: flex; align-items: center; justify-content: center; gap: 30px; }
+        .pie { width: 180px; height: 180px; border-radius: 50%; flex-shrink: 0; }
+        .pie-legend { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+        .pie-legend-item { display: flex; align-items: center; gap: 8px; }
+        .pie-legend-color { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+        /* Simple stat card */
+        .stat-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .stat-card { background: #f0f0f0; border-radius: 6px; padding: 12px 18px; text-align: center; min-width: 90px; }
+        .stat-card .num { font-size: 24px; font-weight: bold; color: #e94560; }
+        .stat-card .lbl { font-size: 11px; color: #666; }
+
         @media (max-width: 768px) {
             .chart-grid { grid-template-columns: 1fr; }
+            .pie-chart { flex-direction: column; }
+            .likert-label { width: 100px; }
+        }
+
+        @media print {
+            body { padding: 0; background: #fff; }
+            .chart-card { break-inside: avoid; }
         }
     </style>
 </head>
 <body>
-    <h1>Simon Says Sequence — Survey Data Charts</h1>
-    <p style="text-align:center;margin-bottom:20px;color:#666;font-size:13px;">
-        6 respondents | Google Forms survey | May 2026
-    </p>
+    <h1>Simon Says Sequence — Survey Charts</h1>
+    <p class="subtitle">6 respondents | Google Forms survey | May 2026</p>
 
     <div class="chart-grid">
-        <!-- Chart 1: Age Group -->
+
+        <!-- Chart 1: Age Group (pie) -->
         <div class="chart-card">
             <h3>Age Group Distribution</h3>
-            <canvas id="ageChart"></canvas>
+            <div class="pie-chart">
+                <div class="pie" style="background: conic-gradient(#e94560 0% 50%, #0f3460 50% 83.3%, #bb86fc 83.3% 100%);"></div>
+                <div class="pie-legend">
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#e94560;"></span> 18-24 (3)</div>
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#0f3460;"></span> 25-34 (2)</div>
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#bb86fc;"></span> 35-44 (1)</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Chart 2: Gaming Frequency -->
+        <!-- Chart 2: Gaming Frequency (bar) -->
         <div class="chart-card">
             <h3>Gaming Frequency</h3>
-            <canvas id="gamingChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:30px;background:#e94560;"></div><span class="bar-count">1</span><span class="bar-label">Rarely</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#0f3460;"></div><span class="bar-count">2</span><span class="bar-label">Occasionally</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#bb86fc;"></div><span class="bar-count">1</span><span class="bar-label">Often</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#00cc44;"></div><span class="bar-count">2</span><span class="bar-label">Very Often</span></div>
+            </div>
         </div>
 
-        <!-- Chart 3: Visual Design -->
+        <!-- Chart 3: Visual Design Rating (bar) -->
         <div class="chart-card">
             <h3>Visual Design Rating</h3>
-            <canvas id="visualChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:90px;background:#0f3460;"></div><span class="bar-count">3</span><span class="bar-label">Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#bb86fc;"></div><span class="bar-count">2</span><span class="bar-label">Very Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#ffd700;"></div><span class="bar-count">1</span><span class="bar-label">Excellent</span></div>
+            </div>
         </div>
 
-        <!-- Chart 4: Audio Feedback -->
+        <!-- Chart 4: Audio Feedback (bar) -->
         <div class="chart-card">
             <h3>Audio Feedback Rating</h3>
-            <canvas id="audioChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:30px;background:#e94560;"></div><span class="bar-count">1</span><span class="bar-label">Fair</span></div>
+                <div class="bar-group"><div class="bar" style="height:90px;background:#0f3460;"></div><span class="bar-count">3</span><span class="bar-label">Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#bb86fc;"></div><span class="bar-count">2</span><span class="bar-label">Very Good</span></div>
+            </div>
         </div>
 
-        <!-- Chart 5: Likert Averages -->
+        <!-- Chart 5: Likert Scale Averages (horizontal bars) -->
         <div class="chart-card full">
-            <h3>Likert Scale Question Averages (1 = Strongly Disagree, 5 = Strongly Agree)</h3>
-            <canvas id="likertChart"></canvas>
+            <h3>Likert Scale Averages (1 = Strongly Disagree, 5 = Strongly Agree)</h3>
+            <div class="likert-chart">
+                <div class="likert-row"><span class="likert-label">Ease of Learning</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:90%;background:#e94560;">4.5</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Launcher Intuitiveness</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:80%;background:#0f3460;">4.0</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Response Speed</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:90%;background:#bb86fc;">4.5</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Sequence Clarity</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:86%;background:#00cc44;">4.3</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Difficulty Balance</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:74%;background:#ff8800;">3.7</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Special Mode Enjoyment</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:90%;background:#e94560;">4.5</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Leaderboard Motivation</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:80%;background:#0f3460;">4.0</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Feedback Features</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:70%;background:#bb86fc;">3.5</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">No Performance Errors</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:90%;background:#00cc44;">4.5</div></div><span class="likert-scale">/5</span></div>
+                <div class="likert-row"><span class="likert-label">Overall Satisfaction</span><div class="likert-bar-bg"><div class="likert-bar-fill" style="width:84%;background:#e94560;">4.2</div></div><span class="likert-scale">/5</span></div>
+            </div>
         </div>
 
-        <!-- Chart 6: Would Play Again -->
+        <!-- Chart 6: Would Play Again (pie) -->
         <div class="chart-card">
             <h3>"Would you play this game again?"</h3>
-            <canvas id="playAgainChart"></canvas>
+            <div class="pie-chart">
+                <div class="pie" style="background: conic-gradient(#00cc44 0% 16.7%, #bb86fc 16.7% 83.3%, #0f3460 83.3% 100%);"></div>
+                <div class="pie-legend">
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#00cc44;"></span> Definitely Yes (1)</div>
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#bb86fc;"></span> Probably Yes (4)</div>
+                    <div class="pie-legend-item"><span class="pie-legend-color" style="background:#0f3460;"></span> Maybe (1)</div>
+                </div>
+            </div>
         </div>
 
-        <!-- Chart 7: Button Responsiveness -->
+        <!-- Chart 7: Button Responsiveness (bar) -->
         <div class="chart-card">
             <h3>Button Responsiveness Rating</h3>
-            <canvas id="buttonChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:90px;background:#0f3460;"></div><span class="bar-count">3</span><span class="bar-label">Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#bb86fc;"></div><span class="bar-count">1</span><span class="bar-label">Very Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#ffd700;"></div><span class="bar-count">2</span><span class="bar-label">Excellent</span></div>
+            </div>
         </div>
 
-        <!-- Chart 8: Special Mode -->
+        <!-- Chart 8: Special Mode Features (bar) -->
         <div class="chart-card">
             <h3>Special Mode Features Rating</h3>
-            <canvas id="specialChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:60px;background:#0f3460;"></div><span class="bar-count">2</span><span class="bar-label">Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#bb86fc;"></div><span class="bar-count">2</span><span class="bar-label">Very Good</span></div>
+                <div class="bar-group"><div class="bar" style="height:60px;background:#ffd700;"></div><span class="bar-count">2</span><span class="bar-label">Excellent</span></div>
+            </div>
         </div>
 
-        <!-- Chart 9: Timer Mode -->
+        <!-- Chart 9: Timer Mode Experience (bar) -->
         <div class="chart-card">
             <h3>Timer Mode Experience</h3>
-            <canvas id="timerChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:30px;background:#e94560;"></div><span class="bar-count">1</span><span class="bar-label">Stressful</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#0f3460;"></div><span class="bar-count">1</span><span class="bar-label">Neutral</span></div>
+                <div class="bar-group"><div class="bar" style="height:90px;background:#bb86fc;"></div><span class="bar-count">3</span><span class="bar-label">Helpful</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#00cc44;"></div><span class="bar-count">1</span><span class="bar-label">Very Helpful</span></div>
+            </div>
         </div>
 
-        <!-- Chart 10: Difficulty -->
+        <!-- Chart 10: Difficulty Progression (bar) -->
         <div class="chart-card">
             <h3>Difficulty Progression Rating</h3>
-            <canvas id="difficultyChart"></canvas>
+            <div class="bar-chart">
+                <div class="bar-group"><div class="bar" style="height:30px;background:#ff8800;"></div><span class="bar-count">1</span><span class="bar-label">Too Easy</span></div>
+                <div class="bar-group"><div class="bar" style="height:90px;background:#00cc44;"></div><span class="bar-count">3</span><span class="bar-label">Just Right</span></div>
+                <div class="bar-group"><div class="bar" style="height:30px;background:#e94560;"></div><span class="bar-count">1</span><span class="bar-label">Hard</span></div>
+            </div>
         </div>
+
     </div>
 
-    <script>
-        Chart.defaults.color = '#555';
-        Chart.defaults.font.size = 12;
-
-        const colorPalette = ['#e94560', '#0f3460', '#16213e', '#bb86fc', '#ff8800', '#00cc44'];
-
-        // 1. Age Group
-        new Chart(document.getElementById('ageChart'), {
-            type: 'pie',
-            data: {
-                labels: ['18-24', '25-34', '35-44'],
-                datasets: [{
-                    data: [3, 2, 1],
-                    backgroundColor: ['#e94560', '#0f3460', '#bb86fc'],
-                }]
-            }
-        });
-
-        // 2. Gaming Frequency
-        new Chart(document.getElementById('gamingChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Rarely', 'Occasionally', 'Often', 'Very Often'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [1, 2, 1, 2],
-                    backgroundColor: ['#e94560', '#0f3460', '#bb86fc', '#00cc44'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-                    backgroundColor: colorPalette,
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 3. Visual Design
-        new Chart(document.getElementById('visualChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Good', 'Very Good', 'Excellent'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [3, 2, 1],
-                    backgroundColor: ['#0f3460', '#bb86fc', '#ffd700'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 4. Audio Feedback
-        new Chart(document.getElementById('audioChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Fair', 'Good', 'Very Good'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [1, 3, 2],
-                    backgroundColor: ['#e94560', '#0f3460', '#bb86fc'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 5. Likert Scale Averages
-        new Chart(document.getElementById('likertChart'), {
-            type: 'bar',
-            data: {
-                labels: [
-                    'Ease of Learning',
-                    'Launcher Intuitiveness',
-                    'Response Speed',
-                    'Sequence Clarity',
-                    'Difficulty Balance',
-                    'Special Mode Enjoyment',
-                    'Leaderboard Motivation',
-                    'Feedback Features',
-                    'No Errors',
-                    'Overall Satisfaction'
-                ],
-                datasets: [{
-                    label: 'Average Rating (1-5)',
-                    data: [4.5, 4.0, 4.5, 4.3, 3.7, 4.5, 4.0, 3.5, 4.5, 4.2],
-                    backgroundColor: '#e94560',
-                }]
-            },
-            options: {
-                scales: {
-                    y: { beginAtZero: true, max: 5, ticks: { stepSize: 1 } }
-                },
-                plugins: {
-                    tooltip: { callbacks: { label: (ctx) => ctx.raw + '/5' } }
-                }
-            }
-        });
-
-        // 6. Would Play Again
-        new Chart(document.getElementById('playAgainChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Definitely Yes', 'Probably Yes', 'Maybe'],
-                datasets: [{
-                    data: [1, 4, 1],
-                    backgroundColor: ['#00cc44', '#bb86fc', '#0f3460'],
-                }]
-            }
-        });
-
-        // 7. Button Responsiveness
-        new Chart(document.getElementById('buttonChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Good', 'Very Good', 'Excellent'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [3, 1, 2],
-                    backgroundColor: ['#0f3460', '#bb86fc', '#ffd700'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 8. Special Mode Features
-        new Chart(document.getElementById('specialChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Good', 'Very Good', 'Excellent'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [2, 2, 2],
-                    backgroundColor: ['#0f3460', '#bb86fc', '#ffd700'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 9. Timer Mode Experience
-        new Chart(document.getElementById('timerChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Stressful', 'Neutral', 'Helpful', 'Very Helpful'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [1, 1, 3, 1],
-                    backgroundColor: ['#e94560', '#0f3460', '#bb86fc', '#00cc44'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-
-        // 10. Difficulty Progression
-        new Chart(document.getElementById('difficultyChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Too Easy', 'Just Right', 'Hard'],
-                datasets: [{
-                    label: 'Respondents',
-                    data: [1, 3, 1],
-                    backgroundColor: ['#ff8800', '#00cc44', '#e94560'],
-                }]
-            },
-            options: {
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-            }
-        });
-    </script>
+    <p style="text-align:center;margin-top:20px;color:#999;font-size:12px;">
+        Right-click each chart card → "Save as image" or screenshot for the report.
+    </p>
 </body>
 </html>
